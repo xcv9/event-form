@@ -1,0 +1,116 @@
+(() => {
+  const layer = document.getElementById("snow-layer");
+  const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+
+  // Если у пользователя включено "уменьшение анимации" — делаем минимум
+  const BASE_COUNT = reduceMotion ? 10 : 34;
+
+  // Прозрачность 15–20%
+  const MIN_OPACITY = 0.15;
+  const MAX_OPACITY = 0.20;
+
+  const rand = (min, max) => Math.random() * (max - min) + min;
+
+  // Параллакс-слои: дальний / средний / ближний
+  // Чем ближе — тем больше, быстрее, сильнее дрейф и вращение
+  const layers = [
+    {
+      weight: 0.35,                 // доля снежинок
+      size: [18, 34],
+      fall: [18, 30],
+      sway: [5.0, 9.0],
+      drift: [-40, 40],
+      swayAmp: [10, 35],
+      spin: [240, 720],
+      blur: [0.6, 1.2],
+      scale: [0.75, 0.92],
+      shadowAlpha: 0.06
+    },
+    {
+      weight: 0.40,
+      size: [24, 46],
+      fall: [12, 22],
+      sway: [4.0, 7.0],
+      drift: [-70, 70],
+      swayAmp: [20, 60],
+      spin: [540, 1400],
+      blur: [0.2, 0.7],
+      scale: [0.92, 1.05],
+      shadowAlpha: 0.10
+    },
+    {
+      weight: 0.25,
+      size: [34, 64],
+      fall: [8, 16],
+      sway: [3.0, 6.0],
+      drift: [-110, 110],
+      swayAmp: [30, 95],
+      spin: [900, 2200],
+      blur: [0.0, 0.3],
+      scale: [1.02, 1.18],
+      shadowAlpha: 0.14
+    }
+  ];
+
+  // На маленьких экранах чуть меньше снежинок
+  const count =
+    window.innerWidth < 520 ? Math.round(BASE_COUNT * 0.65) : BASE_COUNT;
+
+  function pickLayer() {
+    const r = Math.random();
+    let acc = 0;
+    for (const L of layers) {
+      acc += L.weight;
+      if (r <= acc) return L;
+    }
+    return layers[layers.length - 1];
+  }
+
+  function createFlake() {
+    const L = pickLayer();
+    const el = document.createElement("div");
+    el.className = "snowflake";
+
+    const size = rand(L.size[0], L.size[1]);
+    const left = rand(0, 100);
+    const opacity = rand(MIN_OPACITY, MAX_OPACITY);
+
+    const fallDur = rand(L.fall[0], L.fall[1]);
+    const swayDur = rand(L.sway[0], L.sway[1]);
+    const delay = rand(0, L.fall[1]); // старт не одновременно
+
+    const drift = rand(L.drift[0], L.drift[1]);
+    const sway = rand(L.swayAmp[0], L.swayAmp[1]);
+
+    const startRot = rand(0, 360);
+    const spin = rand(L.spin[0], L.spin[1]);
+    const dir = Math.random() < 0.5 ? -1 : 1;
+    const endRot = startRot + spin * dir;
+
+    const blur = rand(L.blur[0], L.blur[1]);
+    const scale = rand(L.scale[0], L.scale[1]);
+
+    el.style.width = `${size}px`;
+    el.style.height = `${size}px`;
+    el.style.left = `${left}vw`;
+    el.style.opacity = opacity.toFixed(2);
+
+    el.style.setProperty("--drift", `${drift}px`);
+    el.style.setProperty("--sway", `${sway}px`);
+    el.style.setProperty("--start-rot", `${startRot}deg`);
+    el.style.setProperty("--end-rot", `${endRot}deg`);
+    el.style.setProperty("--scale", scale.toFixed(2));
+
+    // Чуть разная “глубина” через blur + тень
+    el.style.filter = `drop-shadow(0 0 8px rgba(0,255,255,${L.shadowAlpha})) blur(${blur.toFixed(2)}px)`;
+
+    el.style.animationDuration = `${fallDur}s, ${swayDur}s`;
+    el.style.animationDelay = `-${delay}s, -${rand(0, swayDur)}s`;
+
+    return el;
+  }
+
+  for (let i = 0; i < count; i++) {
+    layer.appendChild(createFlake());
+  }
+})();

@@ -1,0 +1,75 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  background: #0b0f1a;
+}
+
+.page {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.form {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+#snow-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* чтобы клики шли в форму */
+  overflow: hidden;
+}
+
+/* Снежинка */
+.snowflake {
+  position: absolute;
+  top: -160px;
+  left: 0;
+
+  width: 40px;
+  height: 40px;
+
+  background-image: url("snow.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  opacity: 0.18; /* JS рандомит 0.15–0.20 */
+  will-change: transform, filter;
+
+  /* Анимации */
+  animation-name: fall, sway;
+  animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+
+  /* лёгкое свечение */
+  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.10));
+}
+
+/* Падение + дрейф + вращение */
+@keyframes fall {
+  from {
+    transform:
+      translate3d(0, -160px, 0)
+      rotate(var(--start-rot))
+      scale(var(--scale));
+  }
+  to {
+    transform:
+      translate3d(var(--drift), 120vh, 0)
+      rotate(var(--end-rot))
+      scale(var(--scale));
+  }
+}
+
+/* Покачивание */
+@keyframes sway {
+  0%, 100% { margin-left: 0; }
+  50% { margin-left: var(--sway); }
+}

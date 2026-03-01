@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Event Form</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page">
+    <!-- Google Form -->
+    <iframe
+      class="form"
+      src="https://docs.google.com/forms/d/e/1FAIpQLSfaa4kWqaUOPgoHTogeO3G1vXJs6iMSaXzqxfXaRgMHo4IbOQ/viewform?embedded=true"
+      frameborder="0"
+      marginheight="0"
+      marginwidth="0"
+      loading="lazy"
+      allowfullscreen
+    ></iframe>
+
+    <!-- Снежинки поверх формы -->
+    <div id="snow-layer" aria-hidden="true"></div>
+  </div>
+
+  <script src="snow.js"></script>
+</body>
+</html>
